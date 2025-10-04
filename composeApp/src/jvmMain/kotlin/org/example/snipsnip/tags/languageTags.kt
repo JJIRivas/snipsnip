@@ -3,7 +3,6 @@ package org.example.snipsnip.tags
 import androidx.compose.ui.graphics.Color
 import org.dizitart.kno2.documentOf
 import org.dizitart.kno2.filters.eq
-import org.dizitart.no2.collection.Document
 import org.dizitart.no2.collection.NitriteCollection
 import org.dizitart.no2.collection.NitriteId
 import org.example.snipsnip.definitions.dbOperations
@@ -39,8 +38,8 @@ class languageTags(private val collection: NitriteCollection): dbOperations<lang
     }
 
     override fun insert(item: languageTagData) {
-        val doc = collection.find("name" eq item.name)
-        if(doc == null || doc.isEmpty) {
+        val doc = collection.find("name" eq item.name).firstOrNull()
+        if(doc == null) {
             collection.insert(documentOf("_id" to item.id, "name" to item.name, "color" to item.color))
         }
     }
@@ -50,24 +49,40 @@ class languageTags(private val collection: NitriteCollection): dbOperations<lang
         collection.remove(filter, true)
     }
 
-    override fun update(item: languageTagData) {}
+    override fun update(item: languageTagData) {
+        collection.update("_id" eq item.id, documentOf("name" to item.name, "color" to item.color))
+    }
 
-    override fun getAll(): ArrayList<Document> {
-        val docs = collection.find()
-        val info = ArrayList<Document>()
+    override fun getAll(): List<languageTagData> {
+        return collection.find().mapNotNull { doc ->
+            val id = doc.get("_id") as NitriteId
+            val name = doc.get("name") as? String
+            val color = doc.get("color") as? Color
 
-        for (document in docs){
-            info.add(document)
+            if (name != null && color != null) {
+                languageTagData(
+                    id = id,
+                    name = name,
+                    color = color
+                )
+            } else null
+        }
+    }
+
+    override fun getById(id: NitriteId): languageTagData? {
+        return collection.getById( id).let {doc ->
+            val name = doc["name"] as String
+            val color = doc["color"] as Color
+            languageTagData(id, name, color)
+        }
+    }
+
+    override fun getByName(name: String): languageTagData? {
+        return collection.find("name" eq name).firstOrNull().let {doc ->
+            val id = doc["_id"] as NitriteId
+            val color = doc["color"] as Color
+            languageTagData(id, name, color)
         }
 
-        return info
-    }
-
-    override fun getById(id: NitriteId): Document? {
-        TODO("Not yet implemented")
-    }
-
-    override fun getByName(name: String): Document? {
-        TODO("Not yet implemented")
     }
 }

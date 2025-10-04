@@ -8,7 +8,7 @@ interface dbOperations<T> {
     fun insert(item: T)
     fun delete(item: T)
     fun update(item: T)
-    fun getAll(): ArrayList<Document>
-    fun getById(id: NitriteId): Document?
-    fun getByName(name: String): Document?
+    fun getAll(): List<T>
+    fun getById(id: NitriteId): T?
+    fun getByName(name: String): T?
 }
