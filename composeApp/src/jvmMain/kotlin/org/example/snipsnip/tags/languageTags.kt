@@ -1,12 +1,18 @@
 package org.example.snipsnip.tags
 
-import java.sql.Connection
-import java.sql.Statement
+import androidx.compose.ui.graphics.Color
+import org.dizitart.kno2.documentOf
+import org.dizitart.kno2.filters.eq
+import org.dizitart.no2.collection.Document
+import org.dizitart.no2.collection.NitriteCollection
+import org.dizitart.no2.collection.NitriteId
+import org.example.snipsnip.definitions.dbOperations
+import org.example.snipsnip.definitions.languageTagData
+import kotlin.random.Random
 
-class languageTags(val connection: Connection) {
+class languageTags(private val collection: NitriteCollection): dbOperations<languageTagData> {
 
-    fun createDefaultTable(){
-        val statement: Statement = connection.createStatement()
+    override fun createDefault(){
 
         val defLangTags = arrayOf("C",
             "C++",
@@ -19,51 +25,49 @@ class languageTags(val connection: Connection) {
             "Go",
             "Kotlin",
             "ASSEMBLY")
-        statement.execute("""DROP TABLE IF EXISTS languageTags;""")
-        statement.execute("""
-        CREATE TABLE IF NOT EXISTS languageTags (
-            id_language_tag INTEGER PRIMARY KEY AUTOINCREMENT,
-            lang_tag TEXT NOT NULL
-        ); """)
 
+        for(i in defLangTags){
+            collection.insert(
+                documentOf(
+                    "name" to i,
+                    "color" to Color(
+                        Random.nextInt()
+                    )
+                )
+            )
+        }
+    }
 
-        for(tag in defLangTags){
-            statement.execute("""INSERT INTO languageTags (lang_tag) VALUES ('$tag'); """)
+    override fun insert(item: languageTagData) {
+        val doc = collection.find("name" eq item.name)
+        if(doc == null || doc.isEmpty) {
+            collection.insert(documentOf("_id" to item.id, "name" to item.name, "color" to item.color))
+        }
+    }
+
+    override fun delete(item: languageTagData) {
+        val filter = ("name" eq item.name)
+        collection.remove(filter, true)
+    }
+
+    override fun update(item: languageTagData) {}
+
+    override fun getAll(): ArrayList<Document> {
+        val docs = collection.find()
+        val info = ArrayList<Document>()
+
+        for (document in docs){
+            info.add(document)
         }
 
-        println("Table defLangTags and default data inserted successfully.")
+        return info
     }
 
-    fun insertNewLanguageTag(tag: String){
-        val sql = "INSERT INTO languageTags (lang_tag) VALUES (?)"
-        val statement = connection.prepareStatement(sql)
-
-        statement.setString(1, tag)
-
-        statement.executeUpdate()
+    override fun getById(id: NitriteId): Document? {
+        TODO("Not yet implemented")
     }
 
-    fun deleteLanguageTag(tag: String){
-        val sql = "DELETE FROM languageTags WHERE lang_tag = (?)"
-        val statement = connection.prepareStatement(sql)
-
-        statement.setString(1, tag)
-
-        statement.executeUpdate()
-    }
-
-    fun getAllLanguageTags(): MutableList<String> {
-        val sql = "SELECT lang_tag FROM languageTags"
-        val statement = connection.prepareStatement(sql)
-        val resultSet = statement.executeQuery()
-
-        val tags = mutableListOf<String>()
-        while (resultSet.next()) {
-            val tag = resultSet.getString("lang_tag")
-            tags.add(tag)
-        }
-
-        resultSet.close()
-        return tags
+    override fun getByName(name: String): Document? {
+        TODO("Not yet implemented")
     }
 }

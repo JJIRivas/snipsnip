@@ -21,6 +21,8 @@ kotlin {
             implementation(libs.androidx.lifecycle.viewmodelCompose)
             implementation(libs.androidx.lifecycle.runtimeCompose)
             implementation("org.xerial:sqlite-jdbc:3.41.2.2")
+            implementation("org.dizitart:potassium-nitrite:4.3.2")
+            implementation("org.dizitart:nitrite-mvstore-adapter:4.3.2")
         }
         commonTest.dependencies {
             implementation(libs.kotlin.test)
