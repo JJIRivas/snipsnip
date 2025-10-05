@@ -31,9 +31,7 @@ class userTags(private val collection: NitriteCollection): dbOperations<userTagD
             collection.insert(
                 documentOf(
                     "name" to i,
-                    "color" to Color(
-                        Random.nextInt()
-                    )
+                    "color" to Color.Green.toString()
                 )
             )
         }
@@ -57,23 +55,21 @@ class userTags(private val collection: NitriteCollection): dbOperations<userTagD
     override fun getAll(): List<userTagData>{
         return collection.find().mapNotNull { doc ->
             val id = doc.get("_id") as NitriteId
-            val name = doc.get("name") as? String
-            val color = doc.get("color") as? Color
+            val name = doc.get("name") as String
+            val color = doc.get("color") as String
 
-            if (name != null && color != null) {
-                userTagData(
-                    id = id,
-                    name = name,
-                    color = color
-                )
-            } else null
+            userTagData(
+                id = id,
+                name = name,
+                color = color
+            )
         }
     }
 
     override fun getById(id: NitriteId): userTagData?{
         return collection.getById( id).let {doc ->
             val name = doc["name"] as String
-            val color = doc["color"] as Color
+            val color = doc["color"] as String
             userTagData(id, name, color)
         }
     }
@@ -81,7 +77,7 @@ class userTags(private val collection: NitriteCollection): dbOperations<userTagD
     override fun getByName(name: String): userTagData?{
         return collection.find("name" eq name).firstOrNull().let {doc ->
             val id = doc["_id"] as NitriteId
-            val color = doc["color"] as Color
+            val color = doc["color"] as String
             userTagData(id, name, color)
         }
     }

@@ -6,7 +6,7 @@ import java.nio.file.Paths
 
 class DirectoryStarter {
     fun createMainDirectory(): Path {
-        val appDataDir = Paths.get(System.getProperty("user.home"), ".SnipSnipData")
+        val appDataDir = Paths.get(System.getProperty("user.home"), "SnipSnipData")
 
         if(!Files.exists(appDataDir)) {
             Files.createDirectories(appDataDir)

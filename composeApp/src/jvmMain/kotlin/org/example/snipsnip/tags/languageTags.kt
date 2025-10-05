@@ -26,14 +26,7 @@ class languageTags(private val collection: NitriteCollection): dbOperations<lang
             "ASSEMBLY")
 
         for(i in defLangTags){
-            collection.insert(
-                documentOf(
-                    "name" to i,
-                    "color" to Color(
-                        Random.nextInt()
-                    )
-                )
-            )
+            collection.insert(documentOf("name" to i, "color" to Color.Cyan.toString()))
         }
     }
 
@@ -55,24 +48,22 @@ class languageTags(private val collection: NitriteCollection): dbOperations<lang
 
     override fun getAll(): List<languageTagData> {
         return collection.find().mapNotNull { doc ->
-            val id = doc.get("_id") as NitriteId
-            val name = doc.get("name") as? String
-            val color = doc.get("color") as? Color
+            val id = doc.id as NitriteId
+            val name = doc.get("name") as String
+            val color = doc.get("color") as String
 
-            if (name != null && color != null) {
-                languageTagData(
-                    id = id,
-                    name = name,
-                    color = color
-                )
-            } else null
+            languageTagData(
+                id = id,
+                name = name,
+                color = color
+            )
         }
     }
 
     override fun getById(id: NitriteId): languageTagData? {
         return collection.getById( id).let {doc ->
             val name = doc["name"] as String
-            val color = doc["color"] as Color
+            val color = doc["color"] as String
             languageTagData(id, name, color)
         }
     }
@@ -80,7 +71,7 @@ class languageTags(private val collection: NitriteCollection): dbOperations<lang
     override fun getByName(name: String): languageTagData? {
         return collection.find("name" eq name).firstOrNull().let {doc ->
             val id = doc["_id"] as NitriteId
-            val color = doc["color"] as Color
+            val color = doc["color"] as String
             languageTagData(id, name, color)
         }
 

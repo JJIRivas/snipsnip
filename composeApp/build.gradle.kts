@@ -20,9 +20,9 @@ kotlin {
             implementation(compose.components.uiToolingPreview)
             implementation(libs.androidx.lifecycle.viewmodelCompose)
             implementation(libs.androidx.lifecycle.runtimeCompose)
-            implementation("org.xerial:sqlite-jdbc:3.41.2.2")
             implementation("org.dizitart:potassium-nitrite:4.3.2")
             implementation("org.dizitart:nitrite-mvstore-adapter:4.3.2")
+            implementation("org.slf4j:slf4j-nop:2.0.17")
         }
         commonTest.dependencies {
             implementation(libs.kotlin.test)

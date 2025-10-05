@@ -49,8 +49,8 @@ class tagManager(db: Nitrite) {
         }
     }
 
-    fun getAllData(isLanguageData: languageTagData?, isTagData: userTagData?): List<Any>{
-        return if(isLanguageData != null){
+    fun getAllData(test: String, isTagData: userTagData?): List<Any>{
+        return if(test != null){
             langTags.getAll()
         }else if (isTagData != null){
             usrTags.getAll()
