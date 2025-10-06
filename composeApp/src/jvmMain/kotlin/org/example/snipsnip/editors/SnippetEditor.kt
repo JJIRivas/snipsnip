@@ -1,4 +1,4 @@
-package org.example.snipsnip.snippets
+package org.example.snipsnip.editors
 
 import org.dizitart.kno2.documentOf
 import org.dizitart.kno2.filters.eq
@@ -10,15 +10,15 @@ import org.example.snipsnip.definitions.editorOperations
 import org.example.snipsnip.definitions.snippetData
 import java.time.LocalDateTime
 
-class Snippets (private val snippetCollection: NitriteCollection): editorOperations<Document, Document, snippetData> {
+class SnippetEditor (private val snippetCollection: NitriteCollection): editorOperations<Document, Document, snippetData> {
 
-    override fun insertNew(tags: List<Document>?, lang: Document): snippetData? {
+    override fun insertNew(tags: List<Document>?, lang: Document, num: Int): snippetData? {
         val time = LocalDateTime.now().toString()
         val docId = NitriteId.newId()
 
         snippetCollection.insert(documentOf(
             "_id" to docId,
-            "title" to " ",
+            "title" to "Untitled snippet: $num",
             "language" to lang,
             "userTags" to tags,
             "dateCreated" to time,
