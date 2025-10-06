@@ -49,6 +49,7 @@ class tagManager(db: Nitrite) {
         }
     }
 
+    //TODO(Fix this stupid if else lmao. ...Also just fix this class in general, too many if else's for my liking.)
     fun getAllData(test: String, isTagData: userTagData?): List<Any>{
         return if(test != null){
             langTags.getAll()
