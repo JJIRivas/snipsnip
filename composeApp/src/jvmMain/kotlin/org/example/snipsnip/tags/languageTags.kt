@@ -5,13 +5,12 @@ import org.dizitart.kno2.documentOf
 import org.dizitart.kno2.filters.eq
 import org.dizitart.no2.collection.NitriteCollection
 import org.dizitart.no2.collection.NitriteId
-import org.example.snipsnip.definitions.dbOperations
+import org.example.snipsnip.definitions.tagsDbOperations
 import org.example.snipsnip.definitions.languageTagData
-import kotlin.random.Random
 
-class languageTags(private val collection: NitriteCollection): dbOperations<languageTagData> {
+class languageTags(private val collection: NitriteCollection): tagsDbOperations<languageTagData> {
 
-    override fun createDefault(){
+    override fun createDefault(): languageTagData? {
 
         val defLangTags = arrayOf("C",
             "C++",
@@ -28,6 +27,7 @@ class languageTags(private val collection: NitriteCollection): dbOperations<lang
         for(i in defLangTags){
             collection.insert(documentOf("name" to i, "color" to Color.Cyan.toString()))
         }
+        return null
     }
 
     override fun insert(item: languageTagData) {
@@ -52,11 +52,7 @@ class languageTags(private val collection: NitriteCollection): dbOperations<lang
             val name = doc.get("name") as String
             val color = doc.get("color") as String
 
-            languageTagData(
-                id = id,
-                name = name,
-                color = color
-            )
+            languageTagData(id, name, color)
         }
     }
 
@@ -64,6 +60,7 @@ class languageTags(private val collection: NitriteCollection): dbOperations<lang
         return collection.getById( id).let {doc ->
             val name = doc["name"] as String
             val color = doc["color"] as String
+
             languageTagData(id, name, color)
         }
     }
@@ -72,6 +69,7 @@ class languageTags(private val collection: NitriteCollection): dbOperations<lang
         return collection.find("name" eq name).firstOrNull().let {doc ->
             val id = doc["_id"] as NitriteId
             val color = doc["color"] as String
+
             languageTagData(id, name, color)
         }
 

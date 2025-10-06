@@ -12,13 +12,13 @@ fun main() {
         val db = DatabaseStarter().createMainDB(mainFolder)
         val tagCoordinator = tagManager(db)
         tagCoordinator.createDefaultTables()
-    val tesst = tagCoordinator.getAllData(" s", null)
-    for(i in tesst){
-        println(i)
-        println("------")
-    }
-        val snippetCoordinator = snippetManager()
-        val nTextCoordinator = nTextManager()
+//    val tesst = tagCoordinator.getAllData(" s", null)
+//    for(i in tesst){
+//        println(i)
+//        println("------")
+//    }
+//        val snippetCoordinator = snippetManager()
+//        val nTextCoordinator = nTextManager()
 }
 
 

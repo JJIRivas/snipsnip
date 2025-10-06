@@ -1,4 +1,7 @@
 package org.example.snipsnip.managers
 
-class snippetManager {
+import org.dizitart.no2.Nitrite
+
+class snippetManager(db: Nitrite) {
+
 }

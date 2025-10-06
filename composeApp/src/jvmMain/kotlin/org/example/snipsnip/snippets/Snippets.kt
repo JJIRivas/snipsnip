@@ -1,74 +1,86 @@
 package org.example.snipsnip.snippets
 
-import java.sql.Connection
-import java.sql.PreparedStatement
-import java.sql.Timestamp
+import org.dizitart.kno2.documentOf
+import org.dizitart.kno2.filters.eq
+import org.dizitart.no2.collection.Document
+import org.dizitart.no2.collection.NitriteCollection
+import org.dizitart.no2.collection.NitriteId
+import org.dizitart.no2.exceptions.NotIdentifiableException
+import org.example.snipsnip.definitions.editorOperations
+import org.example.snipsnip.definitions.snippetData
 import java.time.LocalDateTime
-import java.time.format.DateTimeFormatter
 
-class Snippets (val connection: Connection) {
+class Snippets (private val snippetCollection: NitriteCollection): editorOperations<Document, Document, snippetData> {
 
-    fun createDefaultSnippetTable(){
-        val statement = connection.createStatement()
-        statement.execute("""DROP TABLE IF EXISTS snippets;""")
-        statement.execute("""CREATE TABLE IF NOT EXISTS snippets
-                            (
-                                id_snippet      INTEGER PRIMARY KEY AUTOINCREMENT,
-                                id_language_tag INTEGER,
-                                id_usr_tag      INTEGER,
-                                name            TEXT      NOT NULL,
-                                code            TEXT,
-                                created_at      TEXT NOT NULL,
-                                edited_at       TEXT NOT NULL,
-                                FOREIGN KEY (id_language_tag) REFERENCES languageTags (id_language_tag),
-                                FOREIGN KEY (id_usr_tag) REFERENCES userTags (id_usr_tag)
-                            );""")
+    override fun insertNew(tags: List<Document>?, lang: Document): snippetData? {
+        val time = LocalDateTime.now().toString()
+        val docId = NitriteId.newId()
 
-        println("Table snippets created successfully.")
+        snippetCollection.insert(documentOf(
+            "_id" to docId,
+            "title" to " ",
+            "language" to lang,
+            "userTags" to tags,
+            "dateCreated" to time,
+            "dateUpdated" to time,
+            "writtenText" to " ",
+            "editorLinked" to documentOf())
+        )
+
+        return docToData(snippetCollection.getById(docId))
     }
 
-    fun createEmptySnippet(name: String = "", languageID: Int = 0){
-        val formattedDateTime: String = LocalDateTime.now().format(DateTimeFormatter.ISO_LOCAL_DATE_TIME)
-        val localDateTime = LocalDateTime.parse(formattedDateTime, DateTimeFormatter.ISO_LOCAL_DATE_TIME)
-        val timestamp = Timestamp.valueOf(localDateTime)
-        val sql = "INSERT INTO snippets (name, id_language_tag, created_at, edited_at) VALUES (?, ?, ?, ?);"
-        val statement = connection.prepareStatement(sql)
 
-        if(!name.isEmpty() && languageID != 0){
-            emptySnippetValues(statement, name, languageID, timestamp)
-        }else{
-            emptySnippetValues(statement, timestamp = timestamp)
-        }
+    override fun delete(doc: snippetData): Boolean {
+        try {
+            snippetCollection.remove("_id" eq doc.id, true)
+        }catch (e: NotIdentifiableException) {return false}
 
+        return true
     }
 
-    fun emptySnippetValues(statement: PreparedStatement, name: String = "", languageID: Int = 0, timestamp: Timestamp){
-        if(!name.isEmpty() && languageID != 0){
-            statement.setString(1, name)
-            statement.setInt(2, languageID)
-            statement.setTimestamp(3, timestamp)
-            statement.setTimestamp(4, timestamp)
-            statement.executeUpdate()
-            return
-        }
-
-        val statement1 = connection.createStatement()
-        val resultSet = statement1.executeQuery("""SELECT COUNT(*) FROM snippets;""")
-
-        if (resultSet.next()) {
-            val position = resultSet.getInt(1)
-            statement.setString(1, "New Snippet $position")
-            statement.setInt(2, 1)
-            statement.setTimestamp(3, timestamp)
-            statement.setTimestamp(4, timestamp)
-            statement.executeUpdate()
-            return
-        }
+    override fun update(doc: snippetData): snippetData? {
+        val newDoc = dataToDoc(doc) ?: return null
+        snippetCollection.update("_id" eq doc.id, newDoc)
+        return docToData(snippetCollection.getById(doc.id))
     }
 
-    fun obtainSnippetId(){}
-    fun editSnippet(){}
-    fun deleteSnippet(){}
-    fun obtainSnippetByName(){}
-    fun obtainSnippetTotal(){}
+    override fun getAll(): List<snippetData> = snippetCollection.find().mapNotNull { docToData(it) }
+
+
+
+    override fun getByName(name: String): snippetData? = snippetCollection.find("title" eq name).firstOrNull()?.let { docToData(it) }
+
+
+
+    fun docToData(doc: Document): snippetData? {
+
+        return try{
+            snippetData(doc.id,
+                doc["title"] as String,
+                doc["language"] as Document,
+                doc["userTags"] as? List<Document>,
+                doc["dateCreated"] as String,
+                doc["dateUpdated"] as String,
+                doc["writtenText"] as String,
+                doc["editorLinked"] as? Document)
+        }catch(e: Exception){null}
+    }
+
+    fun dataToDoc(data: snippetData): Document?{
+        val currentTime = LocalDateTime.now().toString()
+        return try{
+            documentOf(
+                "_id" to data.id,
+                "title" to data.title,
+                "language" to data.language,
+                "userTags" to data.userTags,
+                "dateCreated" to data.dateCreated,
+                "dateUpdated" to currentTime,
+                "writtenText" to data.writtenText,
+                "editorLinked" to data.editorLinked)
+        }catch(e: java.lang.Exception){null}
+    }
+
+
 }

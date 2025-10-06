@@ -5,16 +5,12 @@ import org.dizitart.kno2.documentOf
 import org.dizitart.kno2.filters.eq
 import org.dizitart.no2.collection.NitriteCollection
 import org.dizitart.no2.collection.NitriteId
-import org.example.snipsnip.definitions.dbOperations
-import org.example.snipsnip.definitions.languageTagData
+import org.example.snipsnip.definitions.tagsDbOperations
 import org.example.snipsnip.definitions.userTagData
-import java.sql.Connection
-import java.sql.Statement
-import kotlin.random.Random
 
-class userTags(private val collection: NitriteCollection): dbOperations<userTagData> {
+class userTags(private val collection: NitriteCollection): tagsDbOperations<userTagData> {
 
-    override fun createDefault(){
+    override fun createDefault(): userTagData? {
         val defUserTags = arrayOf("favorite",
             "draft",
             "test",
@@ -35,6 +31,7 @@ class userTags(private val collection: NitriteCollection): dbOperations<userTagD
                 )
             )
         }
+        return null
     }
 
     override fun insert(item: userTagData){
