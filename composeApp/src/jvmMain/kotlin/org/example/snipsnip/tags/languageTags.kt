@@ -5,8 +5,8 @@ import org.dizitart.kno2.documentOf
 import org.dizitart.kno2.filters.eq
 import org.dizitart.no2.collection.NitriteCollection
 import org.dizitart.no2.collection.NitriteId
-import org.example.snipsnip.definitions.tagsDbOperations
 import org.example.snipsnip.definitions.languageTagData
+import org.example.snipsnip.definitions.tagsDbOperations
 
 class languageTags(private val collection: NitriteCollection): tagsDbOperations<languageTagData> {
 

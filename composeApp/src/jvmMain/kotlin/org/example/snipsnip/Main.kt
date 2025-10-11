@@ -3,6 +3,7 @@ package org.example.snipsnip
 import org.example.snipsnip.managers.tagManager
 import org.example.snipsnip.starters.DatabaseStarter
 import org.example.snipsnip.starters.DirectoryStarter
+import org.example.snipsnip.starters.UIStarter
 
 
 fun main() {
@@ -36,6 +37,7 @@ fun main() {
         val db = DatabaseStarter().createMainDB(mainFolder)
         val tagCoordinator = tagManager(db)
         tagCoordinator.createDefaultTables()
+        val startUI = UIStarter().UIStarter()
 //    val tesst = tagCoordinator.getAllData(" s", null)
 //    for(i in tesst){
 //        println(i)

@@ -39,7 +39,7 @@ class UIStarter {
             ) {
 
                 Row(Modifier.height(600.dp), verticalAlignment = Alignment.CenterVertically) {
-                    SnippetList()
+                    SnippetList().SnippetList()
                 }
 
             }
