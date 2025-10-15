@@ -7,7 +7,7 @@ import org.example.snipsnip.editors.SnippetEditor
 import org.example.snipsnip.editors.normalTextEditor
 import org.example.snipsnip.definitions.snippetData
 
-class editorManager(snippetCollection: NitriteCollection, normalTextCollection: NitriteCollection) {
+class EditorManager(snippetCollection: NitriteCollection, normalTextCollection: NitriteCollection) {
     val normalTextCoordinator = normalTextEditor(normalTextCollection)
     val snippetCoordinator = SnippetEditor(snippetCollection)
 
